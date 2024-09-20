@@ -30,43 +30,84 @@ products = {
     ]
 }
 
-
 def display_sorted_products(products_list, sort_order):
-    pass
-
+    if sort_order == "asc":
+        return sorted(products_list, key=lambda x: x[1])
+    elif sort_order == "desc":
+        return sorted(products_list, key=lambda x: x[1], reverse=True)
 
 def display_products(products_list):
-    pass
-
+    for index, product in enumerate(products_list):
+        print(f"{index + 1}. {product[0]} - ${product[1]}")
 
 def display_categories():
-    pass
-
+    for index, category in enumerate(products.keys()):
+        print(f"{index + 1}. {category}")
 
 def add_to_cart(cart, product, quantity):
-    pass
+    cart.append((product, quantity))
 
 def display_cart(cart):
-    pass
-
+    total_cost = 0
+    for item in cart:
+        product, quantity = item
+        total_cost += product[1] * quantity
+        print(f"{product[0]} - ${product[1]} x {quantity} = ${product[1] * quantity}")
+    print(f"Total cost: ${total_cost}")
 
 def generate_receipt(name, email, cart, total_cost, address):
-    pass
-
+    print(f"Customer: {name}\nEmail: {email}\nItems Purchased:\n")
+    for item in cart:
+        product, quantity = item
+        print(f"{quantity} x {product[0]} - ${product[1]} = ${product[1] * quantity}")
+    print(f"Total: ${total_cost}\nDelivery Address: {address}\nYour items will be delivered in 3 days.\nPayment will be accepted upon delivery.")
 
 def validate_name(name):
-    pass
+    return name.replace(" ", "").replace("-", "").isalpha() and " " in name
 
 def validate_email(email):
-    pass
-
+    return "@" in email
 
 def main():
-    pass
+    name = input("Please enter your name: ")
+    email = input("Please enter your email address: ")
     
+    while not validate_name(name):
+        print("Invalid name. Please enter a valid name with first and last name.")
+        name = input("Please enter your name: ")
+    
+    while not validate_email(email):
+        print("Invalid email address. Please enter a valid email address.")
+        email = input("Please enter your email address: ")
+    
+    display_categories()
+    category_choice = int(input("Please select a category by entering the number: ")) - 1
+    category = list(products.keys())[category_choice]
+    
+    display_products(products[category])
+    while True:
+        choice = input("Would you like to: 1. Select a product to buy, 2. Sort the products by price, 3. Go back to the category selection, 4. Finish shopping: ")
+        if choice == "1":
+            product_choice = int(input("Enter the number of the product you want to buy: ")) - 1
+            quantity = int(input("Enter the quantity: "))
+            add_to_cart(cart, (products[category][product_choice], quantity))
+        elif choice == "2":
+            sort_order = input("Enter 1 for ascending or 2 for descending: ")
+            sorted_products = display_sorted_products(products[category], "asc" if sort_order == "1" else "desc")
+            display_products(sorted_products)
+        elif choice == "3":
+            display_categories()
+            category_choice = int(input("Please select a category by entering the number: ")) - 1
+            category = list(products.keys())[category_choice]
+            display_products(products[category])
+        elif choice == "4":
+            if cart:
+                total_cost = sum(product[1] * quantity for product, quantity in cart)
+                address = input("Please enter your delivery address: ")
+                generate_receipt(name, email, cart, total_cost, address)
+            else:
+                print("Thank you for using our portal. Hope you buy something from us next time. Have a nice day")
+            break
 
-""" The following block makes sure that the main() function is called when the program is run. 
-It also checks that this is the module that's being run directly, and not being used as a module in some other program. 
-In that case, only the part that's needed will be executed and not the entire program """
 if __name__ == "__main__":
     main()
